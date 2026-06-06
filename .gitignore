@@ -1,0 +1,12 @@
+node_modules
+dist
+.vite
+*.tsbuildinfo
+local-private/
+outputs/
+oldfiles/
+versions/
+content-bank.md
+interview-guide.md
+resume-main.md
+*.pdf

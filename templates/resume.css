@@ -1,0 +1,173 @@
+:root {
+  --text: #050505;
+  --muted: #050505;
+  --line: #050505;
+  --accent: #ff2bd6;
+  --cyan: #00e5ff;
+  --yellow: #fff200;
+  --page: #fff200;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--yellow);
+  color: var(--text);
+  font-family: "Cascadia Code", "Consolas", "Microsoft YaHei", "PingFang SC", monospace;
+  line-height: 1.58;
+}
+
+.resume {
+  position: relative;
+  width: min(900px, calc(100% - 32px));
+  margin: 32px auto;
+  padding: 44px 52px;
+  overflow: hidden;
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.07) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.07) 1px, transparent 1px),
+    linear-gradient(135deg, transparent 0 18px, var(--page) 18px);
+  background-size: 28px 28px, 28px 28px, auto;
+  border: 2px solid var(--line);
+  box-shadow: 12px 12px 0 #050505, 0 22px 42px rgba(0, 0, 0, 0.22);
+  isolation: isolate;
+}
+
+.resume::before {
+  content: "";
+  position: absolute;
+  top: 18px;
+  left: 52px;
+  width: 34%;
+  height: 12px;
+  background: repeating-linear-gradient(90deg, #050505 0 10px, transparent 10px 14px);
+  clip-path: polygon(14px 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+  opacity: 0.9;
+}
+
+.resume::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(135deg, transparent 0 72%, rgba(255, 43, 214, 0.42) 72% 73%, transparent 73%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0 1px, transparent 1px 5px);
+  pointer-events: none;
+}
+
+h1 {
+  display: inline-block;
+  margin: 18px 0 6px;
+  color: #050505;
+  font-size: 32px;
+  font-weight: 900;
+  line-height: 1.2;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  text-shadow: 2px 0 rgba(0, 229, 255, 0.68), -2px 0 rgba(255, 43, 214, 0.68), 0 3px 0 rgba(0, 0, 0, 0.08);
+}
+
+h1 + p {
+  display: block;
+  width: fit-content;
+  max-width: 78%;
+  margin: 10px 0 22px;
+  padding: 8px 14px;
+  background: #050505;
+  color: var(--yellow);
+  font-weight: 700;
+  clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+}
+
+h2 {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 28px 0 10px;
+  padding: 8px 16px;
+  border-bottom: 0;
+  background: #050505;
+  color: var(--yellow);
+  font-size: 18px;
+  font-weight: 900;
+  text-shadow: 1.5px 0 rgba(0, 229, 255, 0.62), -1.5px 0 rgba(255, 43, 214, 0.62);
+  clip-path: polygon(14px 0, 100% 0, calc(100% - 18px) 100%, 0 100%);
+}
+
+h2::after {
+  content: "";
+  flex: 1;
+  height: 2px;
+  min-width: 52px;
+  background: var(--yellow);
+  box-shadow: 5px 5px 0 var(--accent);
+}
+
+h3 {
+  width: fit-content;
+  margin: 18px 0 6px;
+  padding: 4px 10px;
+  border: 2px solid #050505;
+  background: var(--yellow);
+  box-shadow: 5px 5px 0 #050505;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+p {
+  margin: 8px 0;
+}
+
+ul {
+  margin: 6px 0 12px;
+  padding-left: 20px;
+}
+
+li {
+  margin: 4px 0;
+  font-weight: 600;
+}
+
+li::marker {
+  color: var(--accent);
+}
+
+a {
+  color: #050505;
+  font-weight: 800;
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-decoration-color: var(--accent);
+  text-underline-offset: 3px;
+}
+
+code {
+  padding: 1px 4px;
+  border: 1px solid #050505;
+  background: #050505;
+  color: var(--yellow);
+  font-size: 0.92em;
+}
+
+hr {
+  height: 10px;
+  border: 0;
+  background: repeating-linear-gradient(90deg, #050505 0 18px, transparent 18px 26px);
+}
+
+@media print {
+  body {
+    background: #fff;
+  }
+
+  .resume {
+    width: auto;
+    margin: 0;
+    padding: 18mm 16mm;
+    box-shadow: none;
+  }
+}
