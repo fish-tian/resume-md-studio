@@ -684,6 +684,175 @@ body.export-page {
   box-shadow: 20px 20px 0 #e8f0ff, 0 12px 28px rgba(37, 99, 235, 0.16);
 }
 
+@media screen and (max-width: 640px) {
+  body.export-page {
+    background: #f5f5f7;
+  }
+
+  .resume-page {
+    width: min(var(--page-width), calc(100vw - 20px));
+    min-height: 0;
+    margin: 10px auto;
+    padding: clamp(20px, 6vw, var(--page-padding));
+    font-size: min(var(--body-size), 14px);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1);
+  }
+
+  .resume-page h1 {
+    font-size: min(var(--h1-size), 28px);
+    overflow-wrap: anywhere;
+  }
+
+  .resume-page h2 {
+    font-size: min(var(--h2-size), 18px);
+  }
+
+  .resume-page h3 {
+    font-size: min(var(--h3-size), 15px);
+  }
+
+  .resume-page p,
+  .resume-page li,
+  .resume-page a {
+    overflow-wrap: anywhere;
+  }
+
+  .resume-avatar {
+    position: static;
+    display: block;
+    margin: 0 0 14px;
+  }
+
+  .resume-avatar img {
+    width: 72px;
+    height: 72px;
+  }
+
+  .template-minimal:has(.resume-avatar) h1,
+  .template-minimal:has(.resume-avatar) h1 + p,
+  .template-cyberpunk:has(.resume-avatar) h1,
+  .template-cyberpunk:has(.resume-avatar) h1 + p,
+  .template-aurora:has(.resume-avatar) h1,
+  .template-aurora:has(.resume-avatar) h1 + p,
+  .template-tide:has(.resume-avatar) h1,
+  .template-tide:has(.resume-avatar) h1 + p,
+  .template-notebook:has(.resume-avatar) h1,
+  .template-notebook:has(.resume-avatar) h1 + p,
+  .template-harbor:has(.resume-avatar) h1,
+  .template-harbor:has(.resume-avatar) h1 + p {
+    margin-left: 0;
+    padding-right: 0;
+  }
+
+  .template-minimal .resume-avatar,
+  .template-cyberpunk .resume-avatar,
+  .template-aurora .resume-avatar,
+  .template-tide .resume-avatar,
+  .template-notebook .resume-avatar,
+  .template-harbor .resume-avatar {
+    position: static;
+    transform: none;
+  }
+
+  .template-cyberpunk {
+    box-shadow: 6px 6px 0 #050505, 0 12px 26px rgba(0, 0, 0, 0.18);
+  }
+
+  .template-cyberpunk h1 + p {
+    max-width: 100%;
+  }
+
+  .template-aurora {
+    padding-top: clamp(24px, 7vw, var(--page-padding));
+  }
+
+  .template-aurora h1 {
+    font-size: min(calc(var(--h1-size) * 1.35), 34px);
+    letter-spacing: 0.02em;
+  }
+
+  .template-aurora .resume-avatar img {
+    width: 84px;
+    height: 84px;
+  }
+
+  .template-tide {
+    padding-top: 104px;
+    background:
+      radial-gradient(130% 150px at 50% -20px, #0f8b8d 0 58%, transparent 59%),
+      #ffffff;
+  }
+
+  .template-tide .resume-avatar {
+    margin: 0 auto 14px;
+    text-align: center;
+  }
+
+  .template-tide .resume-avatar img {
+    width: 82px;
+    height: 82px;
+    border-width: 4px;
+  }
+
+  .template-tide h1 + p {
+    max-width: 100%;
+  }
+
+  .template-notebook .resume-avatar img {
+    border-radius: 10px;
+  }
+
+  .template-harbor {
+    --rail-width: 0px;
+    display: block;
+    padding-top: 138px;
+    background:
+      linear-gradient(180deg, #2563eb 0 128px, transparent 128px),
+      #ffffff;
+  }
+
+  .template-harbor::before {
+    width: 100%;
+    height: 138px;
+    border-bottom-left-radius: 34px;
+  }
+
+  .template-harbor::after {
+    display: none;
+  }
+
+  .template-harbor h1,
+  .template-harbor h1 + p,
+  .template-harbor .resume-sidebar,
+  .template-harbor .resume-main {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .template-harbor h1 {
+    margin-top: -104px;
+  }
+
+  .template-harbor h1 + p {
+    min-height: 0;
+    margin-top: 8px;
+    margin-bottom: 48px;
+  }
+
+  .template-harbor .resume-avatar {
+    position: relative;
+    z-index: 1;
+    margin-top: -118px;
+  }
+
+  .template-harbor .resume-avatar img {
+    width: 84px;
+    height: 84px;
+    border-radius: 20px;
+    box-shadow: 10px 10px 0 #e8f0ff, 0 8px 18px rgba(37, 99, 235, 0.14);
+  }
+}
+
 @media print {
   html,
   body,

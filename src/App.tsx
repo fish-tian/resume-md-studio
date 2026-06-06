@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import defaultResume from "../examples/xiaoming-resume.md?raw";
 import { defaultStyle, fontOptions, getEffectiveStyle, getTemplateThemeColor, templates } from "./config";
 import { buildStandaloneHtml } from "./exportHtml";
@@ -379,14 +379,10 @@ function App() {
           <section className="preview-canvas">
             <div
               className="preview-scale-box"
-              style={{
-                width: `calc(var(--page-width) * ${previewScale})`,
-                minHeight: `calc(960px * ${previewScale})`,
-              }}
+              style={{ "--preview-scale": previewScale } as CSSProperties}
             >
               <article
                 className={`resume-page template-${templateId}`}
-                style={{ transform: `scale(${previewScale})` }}
                 dangerouslySetInnerHTML={{ __html: renderedHtml }}
               />
             </div>
