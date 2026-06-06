@@ -53,6 +53,17 @@ const advancedControls: Array<{
   { key: "printMargin", label: "打印页边距", min: 8, max: 28, step: 1, unit: "mm" },
 ];
 
+const colorPresets = [
+  { name: "石墨", value: "#111827" },
+  { name: "海蓝", value: "#2563eb" },
+  { name: "靛蓝", value: "#4f46e5" },
+  { name: "松绿", value: "#0f766e" },
+  { name: "绯红", value: "#dc2626" },
+  { name: "紫藤", value: "#9333ea" },
+  { name: "琥珀", value: "#d97706" },
+  { name: "夜城黄", value: "#fff200" },
+];
+
 function isTemplateId(value: unknown): value is TemplateId {
   return templates.some((template) => template.id === value);
 }
@@ -87,13 +98,13 @@ function getInitialState(): SavedState {
     const saved = JSON.parse(raw) as Partial<SavedState>;
     return {
       markdown: saved.markdown || defaultResume,
-      templateId: isTemplateId(saved.templateId) ? saved.templateId : "apple",
+      templateId: isTemplateId(saved.templateId) ? saved.templateId : "minimal",
       style: normalizeStyle(saved.style),
     };
   } catch {
     return {
       markdown: defaultResume,
-      templateId: "apple",
+      templateId: "minimal",
       style: defaultStyle,
     };
   }
@@ -124,7 +135,10 @@ function App() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const renderedHtml = useMemo(() => markdownToHtml(markdown), [markdown]);
+  const renderedHtml = useMemo(
+    () => markdownToHtml(markdown, { partitionSidebar: templateId === "harbor" }),
+    [markdown, templateId]
+  );
   const effectiveStyle = useMemo(() => getEffectiveStyle(style, templateId), [style, templateId]);
   const cssVariables = useMemo(() => buildCssVariables(effectiveStyle, ".resume-page"), [effectiveStyle]);
 
@@ -165,7 +179,7 @@ function App() {
   };
 
   const handleInsertImageUrl = () => {
-    const url = window.prompt("输入头像图片 URL，或 public 下的本地路径", "avatars/xiaoming.svg");
+    const url = window.prompt("输入头像图片 URL，或 public 下的本地路径", "avatars/xiaoming.jpg");
     if (!url?.trim()) return;
     insertMarkdown(`\n![头像](${url.trim()})\n`);
   };
@@ -248,6 +262,19 @@ function App() {
                 onChange={(event) => updateStyle("primaryColor", event.target.value)}
               />
             </label>
+            <div className="preset-grid" aria-label="经典主题色">
+              {colorPresets.map((preset) => (
+                <button
+                  key={preset.value}
+                  className={effectiveStyle.primaryColor.toLowerCase() === preset.value ? "preset-chip active" : "preset-chip"}
+                  onClick={() => updateStyle("primaryColor", preset.value)}
+                  type="button"
+                >
+                  <span className="preset-swatch" style={{ background: preset.value }} />
+                  <span>{preset.name}</span>
+                </button>
+              ))}
+            </div>
             <button className="secondary-action" onClick={() => updateStyle("primaryColor", "")}>
               使用模板色
             </button>

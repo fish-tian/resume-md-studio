@@ -16,7 +16,7 @@ export function buildStandaloneHtml(
   style: StyleConfig
 ) {
   const title = extractTitle(markdown);
-  const content = markdownToHtml(markdown);
+  const content = markdownToHtml(markdown, { partitionSidebar: templateId === "harbor" });
 
   return `<!doctype html>
 <html lang="zh-CN">

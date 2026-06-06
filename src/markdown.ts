@@ -22,32 +22,55 @@ function renderInline(value: string) {
     );
 }
 
-export function markdownToHtml(markdown: string) {
+type MarkdownRenderOptions = {
+  partitionSidebar?: boolean;
+};
+
+export function markdownToHtml(markdown: string, options: MarkdownRenderOptions = {}) {
   const lines = markdown.replace(/\r\n/g, "\n").split("\n");
-  const output: string[] = [];
+  const preamble: string[] = [];
+  const sections: Array<{ html: string; sidebar: boolean }> = [];
+  let current = preamble;
   let paragraph: string[] = [];
   let listOpen = false;
   let codeOpen = false;
   let codeLines: string[] = [];
   let avatarUsed = false;
+  let sectionOpen = false;
+  let currentSectionInSidebar = false;
+  let nextSectionInSidebar = false;
 
   const closeParagraph = () => {
     if (paragraph.length === 0) return;
-    output.push(`<p>${renderInline(paragraph.join(" "))}</p>`);
+    current.push(`<p>${renderInline(paragraph.join(" "))}</p>`);
     paragraph = [];
   };
 
   const closeList = () => {
     if (!listOpen) return;
-    output.push("</ul>");
+    current.push("</ul>");
     listOpen = false;
   };
 
   const closeCode = () => {
     if (!codeOpen) return;
-    output.push(`<pre><code>${escapeHtml(codeLines.join("\n"))}</code></pre>`);
+    current.push(`<pre><code>${escapeHtml(codeLines.join("\n"))}</code></pre>`);
     codeLines = [];
     codeOpen = false;
+  };
+
+  const closeSection = () => {
+    if (!sectionOpen) return;
+    closeParagraph();
+    closeList();
+    current.push("</section>");
+    sections.push({
+      html: current.join("\n"),
+      sidebar: currentSectionInSidebar,
+    });
+    current = preamble;
+    currentSectionInSidebar = false;
+    sectionOpen = false;
   };
 
   for (const rawLine of lines) {
@@ -69,6 +92,13 @@ export function markdownToHtml(markdown: string) {
       continue;
     }
 
+    if (/^<!--\s*sidebar\s*-->$/i.test(line)) {
+      closeParagraph();
+      closeList();
+      nextSectionInSidebar = true;
+      continue;
+    }
+
     if (!line) {
       closeParagraph();
       closeList();
@@ -81,7 +111,7 @@ export function markdownToHtml(markdown: string) {
       closeList();
       const className = avatarUsed ? "resume-image" : "resume-avatar";
       avatarUsed = true;
-      output.push(
+      current.push(
         `<figure class="${className}"><img src="${escapeHtml(image[2])}" alt="${escapeHtml(
           image[1]
         )}" /></figure>`
@@ -92,7 +122,7 @@ export function markdownToHtml(markdown: string) {
     if (/^---+$/.test(line)) {
       closeParagraph();
       closeList();
-      output.push("<hr />");
+      current.push("<hr />");
       continue;
     }
 
@@ -101,7 +131,15 @@ export function markdownToHtml(markdown: string) {
       closeParagraph();
       closeList();
       const level = heading[1].length;
-      output.push(`<h${level}>${renderInline(heading[2])}</h${level}>`);
+      if (level === 2) {
+        closeSection();
+        const className = nextSectionInSidebar ? "resume-section sidebar-section" : "resume-section";
+        current = [`<section class="${className}">`];
+        currentSectionInSidebar = nextSectionInSidebar;
+        nextSectionInSidebar = false;
+        sectionOpen = true;
+      }
+      current.push(`<h${level}>${renderInline(heading[2])}</h${level}>`);
       continue;
     }
 
@@ -109,10 +147,10 @@ export function markdownToHtml(markdown: string) {
     if (bullet) {
       closeParagraph();
       if (!listOpen) {
-        output.push("<ul>");
+        current.push("<ul>");
         listOpen = true;
       }
-      output.push(`<li>${renderInline(bullet[1])}</li>`);
+      current.push(`<li>${renderInline(bullet[1])}</li>`);
       continue;
     }
 
@@ -122,7 +160,26 @@ export function markdownToHtml(markdown: string) {
   closeCode();
   closeParagraph();
   closeList();
-  return output.join("\n");
+  closeSection();
+
+  if (!options.partitionSidebar) {
+    return [...preamble, ...sections.map((section) => section.html)].join("\n");
+  }
+
+  const sidebar = sections.filter((section) => section.sidebar).map((section) => section.html);
+  const main = sections.filter((section) => !section.sidebar).map((section) => section.html);
+
+  return [
+    ...preamble,
+    '<div class="resume-layout">',
+    '<aside class="resume-sidebar">',
+    ...sidebar,
+    "</aside>",
+    '<main class="resume-main">',
+    ...main,
+    "</main>",
+    "</div>",
+  ].join("\n");
 }
 
 export function extractTitle(markdown: string) {

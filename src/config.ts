@@ -2,13 +2,6 @@ import type { StyleConfig, TemplateConfig, TemplateId } from "./types";
 
 export const templates: TemplateConfig[] = [
   {
-    id: "apple",
-    name: "清简",
-    description: "留白克制、圆角柔和，适合现代简历展示。",
-    swatch: "linear-gradient(135deg, #f8fafc, #e5e7eb)",
-    themeColor: "#2563eb",
-  },
-  {
     id: "minimal",
     name: "素描",
     description: "黑白灰排版，弱装饰，突出内容本身。",
@@ -16,25 +9,39 @@ export const templates: TemplateConfig[] = [
     themeColor: "#111827",
   },
   {
-    id: "business",
-    name: "蓝印",
-    description: "稳重专业，适合正式投递和传统行业。",
-    swatch: "linear-gradient(135deg, #e0f2fe, #1e3a8a)",
-    themeColor: "#1e3a8a",
-  },
-  {
-    id: "sweet",
-    name: "桃雾",
-    description: "柔和粉色、轻量卡片，适合更个性的展示。",
-    swatch: "linear-gradient(135deg, #ffe4e6, #fbcfe8)",
-    themeColor: "#db2777",
-  },
-  {
     id: "cyberpunk",
     name: "夜城",
     description: "高对比霓虹风格，适合创意和技术展示。",
     swatch: "linear-gradient(135deg, #fff200 0 58%, #050505 58% 72%, #ff2bd6 72% 84%, #00e5ff 84%)",
     themeColor: "#ff2bd6",
+  },
+  {
+    id: "aurora",
+    name: "星幕",
+    description: "深色渐变与大标题开场，适合作品集和视觉岗位。",
+    swatch: "linear-gradient(135deg, #050816 0%, #1e1b4b 48%, #38bdf8 100%)",
+    themeColor: "#38bdf8",
+  },
+  {
+    id: "tide",
+    name: "潮汐",
+    description: "青绿色弧形页眉和居中信息，清爽但有记忆点。",
+    swatch: "linear-gradient(180deg, #0f8b8d 0 38%, #ffffff 38%)",
+    themeColor: "#0f8b8d",
+  },
+  {
+    id: "notebook",
+    name: "札记",
+    description: "紧凑黑白稿纸感，适合内容很多的一页简历。",
+    swatch: "linear-gradient(135deg, #ffffff 0 72%, #111827 72% 78%, #f3f4f6 78%)",
+    themeColor: "#111827",
+  },
+  {
+    id: "harbor",
+    name: "蓝湾",
+    description: "蓝色渐变抬头与左侧资料栏，适合清爽现代的职业简历。",
+    swatch: "linear-gradient(135deg, #ffffff 0 30%, #2563eb 30% 72%, #bae6fd 100%)",
+    themeColor: "#2563eb",
   },
 ];
 

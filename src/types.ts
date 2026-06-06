@@ -1,9 +1,10 @@
 export type TemplateId =
-  | "apple"
   | "minimal"
-  | "business"
-  | "sweet"
-  | "cyberpunk";
+  | "cyberpunk"
+  | "aurora"
+  | "tide"
+  | "notebook"
+  | "harbor";
 
 export type StyleConfig = {
   primaryColor: string;

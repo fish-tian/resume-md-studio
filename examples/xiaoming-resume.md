@@ -1,8 +1,16 @@
-![头像](avatars/xiaoming.svg)
+![头像](avatars/xiaoming.jpg)
 
 # 小明
 男 | 26 岁 | 13800000000 | xiaoming@example.com  
 3 年工作经验 | 后端开发工程师
+
+<!-- sidebar -->
+## 联系方式
+
+- 手机：13800000000
+- 邮箱：xiaoming@example.com
+- 城市：北京
+- 状态：在职，看机会
 
 ## 个人优势
 
@@ -50,13 +58,28 @@
 - 提供 JWT 登录认证、角色权限控制和基础用户管理接口，适合中后台项目快速初始化。
 - 整理 README 和接口示例，方便新人理解后端项目结构和开发流程。
 
+<!-- sidebar -->
 ## 教育经历
 
 - 示例大学 | 本科 | 软件工程 | 2018 - 2022
 
+<!-- sidebar -->
+## 资格证书
+
+- 大学英语四级
+- 软件设计师
+- 普通话二级甲等
+
+<!-- sidebar -->
 ## 技能清单
 
 - 后端：Java、Spring Boot、Spring MVC、MyBatis、RESTful API、JWT
 - 数据库与缓存：MySQL、Redis、索引优化、事务、缓存设计
 - 工程与部署：Maven、Git、Linux、Docker 基础、CI/CD、接口文档
 - 基础能力：数据结构、网络基础、操作系统基础、常见设计模式
+
+<!-- sidebar -->
+## 社交主页
+
+- GitHub：github.com/xiaoming
+- 博客：blog.example.com

@@ -24,6 +24,11 @@ function escapeHtml(value) {
 
 function inlineMarkdown(value) {
   return escapeHtml(value)
+    .replace(/(\s)\|(\s)/g, '$1<span class="resume-separator">|</span>$2')
+    .replace(
+      /!\[([^\]]*)\]\(([^)]+)\)/g,
+      '<img class="resume-inline-image" src="$2" alt="$1" />'
+    )
     .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
     .replace(/\*(.+?)\*/g, "<em>$1</em>")
     .replace(/`(.+?)`/g, "<code>$1</code>")
@@ -38,6 +43,9 @@ function markdownToHtml(markdown) {
   const html = [];
   let listOpen = false;
   let paragraph = [];
+  let avatarUsed = false;
+  let sectionOpen = false;
+  let nextSectionInSidebar = false;
 
   function closeParagraph() {
     if (paragraph.length === 0) return;
@@ -51,12 +59,41 @@ function markdownToHtml(markdown) {
     listOpen = false;
   }
 
+  function closeSection() {
+    if (!sectionOpen) return;
+    closeParagraph();
+    closeList();
+    html.push("</section>");
+    sectionOpen = false;
+  }
+
   for (const rawLine of lines) {
     const line = rawLine.trim();
+
+    if (/^<!--\s*sidebar\s*-->$/i.test(line)) {
+      closeParagraph();
+      closeList();
+      nextSectionInSidebar = true;
+      continue;
+    }
 
     if (!line) {
       closeParagraph();
       closeList();
+      continue;
+    }
+
+    const image = /^!\[([^\]]*)\]\(([^)]+)\)$/.exec(line);
+    if (image) {
+      closeParagraph();
+      closeList();
+      const className = avatarUsed ? "resume-image" : "resume-avatar";
+      avatarUsed = true;
+      html.push(
+        `<figure class="${className}"><img src="${escapeHtml(image[2])}" alt="${escapeHtml(
+          image[1]
+        )}" /></figure>`
+      );
       continue;
     }
 
@@ -65,6 +102,13 @@ function markdownToHtml(markdown) {
       closeParagraph();
       closeList();
       const level = heading[1].length;
+      if (level === 2) {
+        closeSection();
+        const className = nextSectionInSidebar ? "resume-section sidebar-section" : "resume-section";
+        html.push(`<section class="${className}">`);
+        nextSectionInSidebar = false;
+        sectionOpen = true;
+      }
       html.push(`<h${level}>${inlineMarkdown(heading[2])}</h${level}>`);
       continue;
     }
@@ -85,6 +129,7 @@ function markdownToHtml(markdown) {
 
   closeParagraph();
   closeList();
+  closeSection();
   return html.join("\n");
 }
 

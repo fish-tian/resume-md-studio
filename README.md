@@ -63,7 +63,7 @@ npm run preview
 当前项目使用自定义轻量 Markdown 渲染器，主要支持简历常用语法：
 
 ```markdown
-![头像](avatars/xiaoming.svg)
+![头像](avatars/xiaoming.jpg)
 
 # 姓名
 男 | 26岁 | 13800000000 | email@example.com

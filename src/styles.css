@@ -238,6 +238,26 @@
     @apply h-8 w-11 rounded-full border-0 bg-white p-0.5 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.08)];
   }
 
+  .preset-grid {
+    @apply mb-3 grid grid-cols-2 gap-2;
+  }
+
+  .preset-chip {
+    @apply grid min-h-9 grid-cols-[18px_1fr] items-center gap-2 rounded-xl border border-black/5 bg-white px-2.5 py-2 text-left text-xs font-medium text-[#424245] shadow-none;
+  }
+
+  .preset-chip:hover {
+    @apply border-black/10 bg-white shadow-[0_8px_18px_rgba(0,0,0,0.06)];
+  }
+
+  .preset-chip.active {
+    @apply border-[#0071e3]/55 bg-white text-[#0066cc] shadow-[0_0_0_3px_rgba(0,113,227,0.12)];
+  }
+
+  .preset-swatch {
+    @apply block h-[18px] w-[18px] rounded-full border border-black/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.45)];
+  }
+
   .range-row span {
     @apply flex justify-between gap-2;
   }
