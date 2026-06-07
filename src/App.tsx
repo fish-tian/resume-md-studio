@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import defaultResume from "../examples/xiaoming-resume.md?raw";
 import { defaultStyle, fontOptions, getEffectiveStyle, getTemplateThemeColor, templates } from "./config";
 import { buildStandaloneHtml } from "./exportHtml";
@@ -12,6 +12,19 @@ type SavedState = {
   markdown: string;
   templateId: TemplateId;
   style: StyleConfig;
+};
+
+type LocalResumePayload = {
+  markdown: string;
+  sourcePath: string;
+  updatedAt: string;
+};
+
+type LocalResumeStatusKind = "checking" | "loaded" | "changed" | "unavailable" | "error";
+
+type LocalResumeStatus = {
+  kind: LocalResumeStatusKind;
+  message: string;
 };
 
 type ActivePanel = "editor" | "templates" | "style";
@@ -110,6 +123,14 @@ function getInitialState(): SavedState {
   }
 }
 
+async function fetchLocalResume(): Promise<LocalResumePayload> {
+  const response = await fetch("/api/local-resume", { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error(`Local resume unavailable: ${response.status}`);
+  }
+  return response.json() as Promise<LocalResumePayload>;
+}
+
 function clampScale(value: number) {
   return Math.min(1.6, Math.max(0.6, Number(value.toFixed(1))));
 }
@@ -132,6 +153,10 @@ function App() {
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const [activePanel, setActivePanel] = useState<ActivePanel>("editor");
   const [previewScale, setPreviewScale] = useState(1);
+  const [localResumeStatus, setLocalResumeStatus] = useState<LocalResumeStatus>({
+    kind: "checking",
+    message: "正在检查本地简历...",
+  });
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -146,6 +171,59 @@ function App() {
     const payload: SavedState = { markdown, templateId, style };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
   }, [markdown, templateId, style]);
+
+  const loadLocalResume = useCallback(async () => {
+    try {
+      const payload = await fetchLocalResume();
+      setMarkdown(payload.markdown);
+      setLocalResumeStatus({
+        kind: "loaded",
+        message: `已加载本地简历：${payload.sourcePath}`,
+      });
+    } catch {
+      setLocalResumeStatus({
+        kind: "unavailable",
+        message: "本地同步不可用，当前使用缓存/示例内容",
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadLocalResume();
+  }, [loadLocalResume]);
+
+  useEffect(() => {
+    if (!import.meta.hot) return;
+
+    const handleLocalResumeChanged = async () => {
+      setLocalResumeStatus({
+        kind: "changed",
+        message: "检测到本地文件更新",
+      });
+
+      const shouldReload = window.confirm("检测到本地简历文件已更新，是否用本地文件覆盖当前编辑器内容？");
+      if (!shouldReload) return;
+
+      try {
+        const payload = await fetchLocalResume();
+        setMarkdown(payload.markdown);
+        setLocalResumeStatus({
+          kind: "loaded",
+          message: `已加载本地简历：${payload.sourcePath}`,
+        });
+      } catch {
+        setLocalResumeStatus({
+          kind: "error",
+          message: "本地简历更新读取失败",
+        });
+      }
+    };
+
+    import.meta.hot.on("local-resume:changed", handleLocalResumeChanged);
+    return () => {
+      import.meta.hot?.off("local-resume:changed", handleLocalResumeChanged);
+    };
+  }, []);
 
   const updateStyle = <K extends keyof StyleConfig>(key: K, value: StyleConfig[K]) => {
     setStyle((current) => ({ ...current, [key]: value }));
@@ -216,7 +294,12 @@ function App() {
           <div className="panel-section editor-section">
             <div className="panel-title-row">
               <h2>Markdown</h2>
-              <span>{markdown.length} 字符</span>
+              <div className="editor-meta">
+                <span>{markdown.length} 字符</span>
+                <span className={`local-resume-status ${localResumeStatus.kind}`}>
+                  {localResumeStatus.message}
+                </span>
+              </div>
             </div>
             <textarea
               ref={textareaRef}

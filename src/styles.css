@@ -166,6 +166,31 @@
     @apply mb-2.5 flex items-center justify-between gap-2.5;
   }
 
+  .editor-meta {
+    @apply flex min-w-0 flex-wrap items-center justify-end gap-2;
+  }
+
+  .local-resume-status {
+    @apply max-w-[320px] truncate rounded-full bg-white px-2.5 py-1 text-[11px] font-medium;
+  }
+
+  .local-resume-status.loaded {
+    @apply text-[#0f766e];
+  }
+
+  .local-resume-status.changed {
+    @apply text-[#d97706];
+  }
+
+  .local-resume-status.checking,
+  .local-resume-status.unavailable {
+    @apply text-[#86868b];
+  }
+
+  .local-resume-status.error {
+    @apply text-[#dc2626];
+  }
+
   textarea {
     @apply block h-[calc(100vh-216px)] min-h-[420px] w-full resize-none rounded-2xl border border-transparent bg-white p-4 font-mono text-[13px] leading-[1.72] text-[#1d1d1f] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.05)] outline-none;
   }
