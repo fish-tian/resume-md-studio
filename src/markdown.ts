@@ -6,12 +6,27 @@ function escapeHtml(value: string) {
     .replace(/"/g, "&quot;");
 }
 
-function renderInline(value: string) {
+function isExternalImageSrc(value: string) {
+  return /^(?:[a-z][a-z0-9+.-]*:|\/|#)/i.test(value);
+}
+
+type MarkdownRenderOptions = {
+  partitionSidebar?: boolean;
+  resolveImageSrc?: (src: string) => string;
+};
+
+function getImageSrc(value: string, options: MarkdownRenderOptions) {
+  if (isExternalImageSrc(value)) return value;
+  return options.resolveImageSrc?.(value) || value;
+}
+
+function renderInline(value: string, options: MarkdownRenderOptions) {
   return escapeHtml(value)
     .replace(/(\s)\|(\s)/g, '$1<span class="resume-separator">|</span>$2')
     .replace(
       /!\[([^\]]*)\]\(([^)]+)\)/g,
-      '<img class="resume-inline-image" src="$2" alt="$1" />'
+      (_match, alt: string, src: string) =>
+        `<img class="resume-inline-image" src="${escapeHtml(getImageSrc(src, options))}" alt="${alt}" />`
     )
     .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
     .replace(/\*(.+?)\*/g, "<em>$1</em>")
@@ -21,10 +36,6 @@ function renderInline(value: string) {
       '<a href="$2" target="_blank" rel="noreferrer">$1</a>'
     );
 }
-
-type MarkdownRenderOptions = {
-  partitionSidebar?: boolean;
-};
 
 export function markdownToHtml(markdown: string, options: MarkdownRenderOptions = {}) {
   const lines = markdown.replace(/\r\n/g, "\n").split("\n");
@@ -42,7 +53,7 @@ export function markdownToHtml(markdown: string, options: MarkdownRenderOptions 
 
   const closeParagraph = () => {
     if (paragraph.length === 0) return;
-    current.push(`<p>${renderInline(paragraph.join(" "))}</p>`);
+    current.push(`<p>${renderInline(paragraph.join(" "), options)}</p>`);
     paragraph = [];
   };
 
@@ -112,7 +123,7 @@ export function markdownToHtml(markdown: string, options: MarkdownRenderOptions 
       const className = avatarUsed ? "resume-image" : "resume-avatar";
       avatarUsed = true;
       current.push(
-        `<figure class="${className}"><img src="${escapeHtml(image[2])}" alt="${escapeHtml(
+        `<figure class="${className}"><img src="${escapeHtml(getImageSrc(image[2], options))}" alt="${escapeHtml(
           image[1]
         )}" /></figure>`
       );
@@ -139,7 +150,7 @@ export function markdownToHtml(markdown: string, options: MarkdownRenderOptions 
         nextSectionInSidebar = false;
         sectionOpen = true;
       }
-      current.push(`<h${level}>${renderInline(heading[2])}</h${level}>`);
+      current.push(`<h${level}>${renderInline(heading[2], options)}</h${level}>`);
       continue;
     }
 
@@ -150,7 +161,7 @@ export function markdownToHtml(markdown: string, options: MarkdownRenderOptions 
         current.push("<ul>");
         listOpen = true;
       }
-      current.push(`<li>${renderInline(bullet[1])}</li>`);
+      current.push(`<li>${renderInline(bullet[1], options)}</li>`);
       continue;
     }
 

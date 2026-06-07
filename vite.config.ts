@@ -13,6 +13,7 @@ const localResumeRelativePath = "local-private/resume-main.md";
 
 type LocalFsPromises = {
   readFile(path: string, encoding: "utf8"): Promise<string>;
+  readFile(path: string): Promise<Uint8Array>;
   stat(path: string): Promise<{ mtime: Date }>;
 };
 
@@ -26,6 +27,30 @@ async function loadFsPromises() {
 
 function normalizeFilePath(value: string) {
   return value.replace(/\\/g, "/").toLowerCase();
+}
+
+function isLocalPrivatePath(value: string) {
+  const normalized = value.replace(/\\/g, "/");
+  return normalized.startsWith("local-private/") && !normalized.split("/").includes("..");
+}
+
+function getContentType(path: string) {
+  const extension = path.split(".").pop()?.toLowerCase();
+  if (extension === "png") return "image/png";
+  if (extension === "jpg" || extension === "jpeg") return "image/jpeg";
+  if (extension === "webp") return "image/webp";
+  if (extension === "gif") return "image/gif";
+  if (extension === "svg") return "image/svg+xml";
+  return "application/octet-stream";
+}
+
+function getQueryParam(url: string, name: string) {
+  const queryStart = url.indexOf("?");
+  if (queryStart === -1) return "";
+  const pairs = url.slice(queryStart + 1).split("&");
+  const prefix = `${name}=`;
+  const pair = pairs.find((item) => item.startsWith(prefix));
+  return pair ? pair.slice(prefix.length) : "";
 }
 
 function localResumePlugin(): Plugin {
@@ -71,6 +96,36 @@ function localResumePlugin(): Plugin {
               sourcePath: localResumeRelativePath,
             })
           );
+        }
+      });
+
+      server.middlewares.use("/api/local-resume-asset", async (req, res, next) => {
+        if ((req as { method?: string }).method !== "GET") {
+          next();
+          return;
+        }
+
+        const requestUrl = (req as { url?: string }).url || "";
+        const assetPath = getQueryParam(requestUrl, "path");
+        const decodedAssetPath = decodeURIComponent(assetPath);
+
+        if (!isLocalPrivatePath(decodedAssetPath)) {
+          res.statusCode = 403;
+          res.setHeader("Content-Type", "application/json; charset=utf-8");
+          res.end(JSON.stringify({ message: "Local asset path is not allowed" }));
+          return;
+        }
+
+        try {
+          const content = await fs.readFile(`${root}/${decodedAssetPath}`);
+          res.statusCode = 200;
+          res.setHeader("Content-Type", getContentType(decodedAssetPath));
+          res.setHeader("Cache-Control", "no-store");
+          res.end(content);
+        } catch {
+          res.statusCode = 404;
+          res.setHeader("Content-Type", "application/json; charset=utf-8");
+          res.end(JSON.stringify({ message: "Local asset not found" }));
         }
       });
 

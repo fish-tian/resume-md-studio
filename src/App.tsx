@@ -135,6 +135,11 @@ function clampScale(value: number) {
   return Math.min(1.6, Math.max(0.6, Number(value.toFixed(1))));
 }
 
+function resolveLocalRelativeImageSrc(src: string, sourcePath: string) {
+  const assetPath = new URL(src, `http://local/${sourcePath}`).pathname.replace(/^\/+/, "");
+  return `/api/local-resume-asset?path=${encodeURIComponent(assetPath)}`;
+}
+
 function downloadFile(filename: string, content: string, type: string) {
   const blob = new Blob([content], { type });
   const url = URL.createObjectURL(blob);
@@ -150,6 +155,7 @@ function App() {
   const [markdown, setMarkdown] = useState(initialState.markdown);
   const [templateId, setTemplateId] = useState<TemplateId>(initialState.templateId);
   const [style, setStyle] = useState<StyleConfig>(initialState.style);
+  const [localResumeSourcePath, setLocalResumeSourcePath] = useState<string | null>(null);
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const [activePanel, setActivePanel] = useState<ActivePanel>("editor");
   const [previewScale, setPreviewScale] = useState(1);
@@ -162,8 +168,14 @@ function App() {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const renderedHtml = useMemo(
-    () => markdownToHtml(markdown, { partitionSidebar: templateId === "harbor" }),
-    [markdown, templateId]
+    () =>
+      markdownToHtml(markdown, {
+        partitionSidebar: templateId === "harbor",
+        resolveImageSrc: localResumeSourcePath
+          ? (src) => resolveLocalRelativeImageSrc(src, localResumeSourcePath)
+          : undefined,
+      }),
+    [markdown, templateId, localResumeSourcePath]
   );
   const effectiveStyle = useMemo(() => getEffectiveStyle(style, templateId), [style, templateId]);
   const cssVariables = useMemo(() => buildCssVariables(effectiveStyle, ".resume-page"), [effectiveStyle]);
@@ -177,6 +189,7 @@ function App() {
     try {
       const payload = await fetchLocalResume();
       setMarkdown(payload.markdown);
+      setLocalResumeSourcePath(payload.sourcePath);
       setLocalResumeStatus({
         kind: "loaded",
         message: `已加载本地简历：${payload.sourcePath}`,
@@ -208,6 +221,7 @@ function App() {
       try {
         const payload = await fetchLocalResume();
         setMarkdown(payload.markdown);
+        setLocalResumeSourcePath(payload.sourcePath);
         setLocalResumeStatus({
           kind: "loaded",
           message: `已加载本地简历：${payload.sourcePath}`,
@@ -234,6 +248,7 @@ function App() {
     if (!file) return;
     const text = await file.text();
     setMarkdown(text);
+    setLocalResumeSourcePath(null);
   };
 
   const replaceAvatarMarkdown = (imageMarkdown: string) => {

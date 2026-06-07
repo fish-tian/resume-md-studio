@@ -69,6 +69,22 @@ npm run preview
 - `札记`：紧凑稿纸感，适合信息密度较高的一页简历。
 - `蓝湾`：蓝色渐变抬头和左右分栏，适合清爽现代的职业简历。
 
+## 本地私有简历
+
+开发服务会优先读取 `local-private/resume-main.md`，用于维护不提交到公开仓库的个人简历内容。该文件可以直接引用同目录图片：
+
+```markdown
+![头像](./avatar.png)
+```
+
+预览时，应用会根据 `resume-main.md` 的所在目录解析相对图片路径，并通过受限的本地资源接口读取 `local-private/` 下的图片。因此 `./avatar.png` 会被解析为 `local-private/avatar.png`，不需要放到 `public/`，也不需要把图片转成 base64。
+
+注意事项：
+
+- 该能力只服务于本地开发预览，不改变 Markdown 原文。
+- 外部 URL、data URL、以 `/` 开头的站点路径不会被改写。
+- 导出的独立 HTML 仍会保留 Markdown 中的原始图片路径；如果需要独立 HTML 在任意位置打开都能显示头像，请使用外部 URL、data URL，或把图片和 HTML 放在匹配的相对路径下。
+
 ## 支持的 Markdown 语法
 
 当前项目使用自定义轻量 Markdown 渲染器，主要支持简历常用语法：
@@ -135,6 +151,7 @@ npm run preview
 ```text
 .
 ├── examples/              # 示例 Markdown 简历
+├── local-private/         # 本地私有简历和图片，默认不提交
 ├── public/                # 静态资源，例如头像
 ├── scripts/               # 命令行转换脚本
 ├── src/
