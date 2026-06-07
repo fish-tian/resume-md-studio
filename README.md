@@ -2,6 +2,8 @@
 
 一个基于 Markdown 的简历编辑、预览和导出工具。你可以在左侧编写简历 Markdown，在右侧实时预览排版效果，并切换模板、调整样式、导出 HTML 或打印为 PDF。
 
+在线预览：[GitHub Pages](https://fish-tian.github.io/resume-md-studio/)
+
 ## 功能特性
 
 - Markdown 实时编辑和预览
