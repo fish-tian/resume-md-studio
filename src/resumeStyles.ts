@@ -493,10 +493,7 @@ body.export-page {
 
 .template-notebook {
   color: #111827;
-  background:
-    linear-gradient(#ffffff 31px, rgba(17, 24, 39, 0.045) 32px),
-    #ffffff;
-  background-size: 100% 32px;
+  background: #ffffff;
   box-shadow: none;
 }
 

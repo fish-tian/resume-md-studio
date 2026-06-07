@@ -31,9 +31,9 @@ export const templates: TemplateConfig[] = [
   },
   {
     id: "notebook",
-    name: "札记",
-    description: "紧凑黑白稿纸感，适合内容很多的一页简历。",
-    swatch: "linear-gradient(135deg, #ffffff 0 72%, #111827 72% 78%, #f3f4f6 78%)",
+    name: "清稿",
+    description: "紧凑黑白排版，适合内容很多的一页简历。",
+    swatch: "linear-gradient(135deg, #ffffff 0 72%, #111827 72% 78%, #ffffff 78%)",
     themeColor: "#111827",
   },
   {
