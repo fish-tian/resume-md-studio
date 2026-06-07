@@ -158,6 +158,7 @@ function App() {
     message: "正在检查本地简历...",
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const renderedHtml = useMemo(
@@ -233,6 +234,34 @@ function App() {
     if (!file) return;
     const text = await file.text();
     setMarkdown(text);
+  };
+
+  const replaceAvatarMarkdown = (imageMarkdown: string) => {
+    const standaloneImagePattern = /^!\[[^\]]*\]\([^)]+\)\s*$/m;
+    setMarkdown((current) => {
+      if (standaloneImagePattern.test(current)) {
+        return current.replace(standaloneImagePattern, imageMarkdown);
+      }
+      return `${imageMarkdown}\n\n${current}`;
+    });
+  };
+
+  const handleAvatarUpload = (file?: File) => {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      window.alert("Please choose an image file.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result !== "string") return;
+      replaceAvatarMarkdown(`![头像](${reader.result})`);
+    };
+    reader.onerror = () => {
+      window.alert("Failed to read the image file.");
+    };
+    reader.readAsDataURL(file);
   };
 
   const insertMarkdown = (snippet: string) => {
@@ -403,6 +432,7 @@ function App() {
         <div className="toolbar-actions">
           <button onClick={() => fileInputRef.current?.click()}>上传 .md</button>
           <button onClick={handleInsertImageUrl}>插入头像链接</button>
+          <button onClick={() => avatarInputRef.current?.click()}>上传头像</button>
           <button className="primary-action" onClick={handleExportHtml}>
             导出 HTML
           </button>
@@ -413,6 +443,16 @@ function App() {
             accept=".md,.markdown,text/markdown,text/plain"
             hidden
             onChange={(event) => handleUpload(event.target.files?.[0])}
+          />
+          <input
+            ref={avatarInputRef}
+            type="file"
+            accept="image/png,image/jpeg,image/webp,image/gif"
+            hidden
+            onChange={(event) => {
+              handleAvatarUpload(event.target.files?.[0]);
+              event.target.value = "";
+            }}
           />
         </div>
       </header>
